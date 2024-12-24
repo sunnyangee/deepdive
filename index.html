@@ -42,7 +42,7 @@
     </style>
 </head>
 <body>
-    <div id="permissionOverlay">
+    <div id="permissionOverlay" style="display: none;">
         <h1>움직임 권한을 허용해 주세요</h1>
         <button id="permissionButton">허용</button>
     </div>
@@ -108,7 +108,8 @@
         }
 
         if (isIOS()) {
-            console.log('iOS detected: waiting for user interaction to request permission.');
+            console.log('iOS detected: showing permission request overlay.');
+            overlay.style.display = 'flex';
             permissionButton.addEventListener('click', () => {
                 if (!permissionGranted) {
                     console.log('Requesting DeviceOrientation permission...');
@@ -118,7 +119,6 @@
         } else {
             console.log('Non-iOS device detected: skipping permission request.');
             permissionGranted = true;
-            overlay.style.display = 'none';
         }
 
         // Bloom 효과 초기화
@@ -189,8 +189,10 @@
 
         // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
-            console.log('Navigating to loading.html...');
-            window.location.href = 'loading.html';
+            if (!isIOS() || permissionGranted) {
+                console.log('Navigating to loading.html...');
+                window.location.href = 'loading.html';
+            }
         }
 
         window.addEventListener('click', handleInteraction);
