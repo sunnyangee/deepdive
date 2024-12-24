@@ -50,6 +50,7 @@
                     })
                     .catch(console.error);
             } else {
+                // iOS 이전 버전 및 Android
                 window.addEventListener('deviceorientation', handleDeviceOrientation);
             }
         }
@@ -59,9 +60,6 @@
                 rotation.gamma = event.gamma;
             }
         }
-
-        // iOS 권한 요청을 클릭 이벤트에 연결
-        window.addEventListener('click', requestDeviceOrientationPermission);
 
         // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
@@ -77,18 +75,18 @@
         composer.addPass(bloomPass);
 
         // 조명 추가
-        const ambientLight = new THREE.AmbientLight(0x222222, 2); // 주변광 강도 설정
+        const ambientLight = new THREE.AmbientLight(0x222222, 2);
         scene.add(ambientLight);
 
-        const spotLight = new THREE.SpotLight(0xffffff, 1.0); // 스포트라이트로 하이라이트 조정
+        const spotLight = new THREE.SpotLight(0xffffff, 1.0);
         spotLight.position.set(10, 20, 10);
         spotLight.castShadow = true;
         scene.add(spotLight);
 
-        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5); // 배경 밝기 강화
+        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5);
         scene.add(backgroundLight);
 
-        const pointLight = new THREE.PointLight(0xff00ff, 2, 10); // 강한 마젠타색 빛
+        const pointLight = new THREE.PointLight(0xff00ff, 2, 10);
         scene.add(pointLight);
 
         // GLTFLoader로 모델 로드
@@ -96,54 +94,39 @@
         let mainModel;
         let backgroundScene;
 
-        loader.load(
-            './rockstar/scene.gltf', // 배경 파일 경로
-            function (gltf) {
-                backgroundScene = gltf.scene;
-                backgroundScene.traverse((node) => {
-                    if (node.isMesh && node.material) {
-                        node.material.metalness = 0.8; // 바닥 반사 설정
-                        node.material.roughness = 0.2; // 반사 매끄러움 조정
-
-                        if (node.material.emissive) {
-                            node.material.emissiveIntensity = 3; // 배경 네온 밝기 조정
-                        } else {
-                            node.material.emissive = new THREE.Color(0x333333); // 어두운 발광 기본값
-                            node.material.emissiveIntensity = 1.5;
-                        }
+        loader.load('./rockstar/scene.gltf', function (gltf) {
+            backgroundScene = gltf.scene;
+            backgroundScene.traverse((node) => {
+                if (node.isMesh && node.material) {
+                    node.material.metalness = 0.8;
+                    node.material.roughness = 0.2;
+                    if (node.material.emissive) {
+                        node.material.emissiveIntensity = 3;
+                    } else {
+                        node.material.emissive = new THREE.Color(0x333333);
+                        node.material.emissiveIntensity = 1.5;
                     }
-                });
-                scene.add(backgroundScene);
-                backgroundScene.position.set(4, -16, 3); // 배경 모델 위치
-                backgroundScene.scale.set(1, 1, 1); // 배경 크기 조정
-            },
-            undefined,
-            function (error) {
-                console.error('An error occurred while loading the background:', error);
-            }
-        );
+                }
+            });
+            scene.add(backgroundScene);
+            backgroundScene.position.set(4, -16, 3);
+            backgroundScene.scale.set(1, 1, 1);
+        });
 
-        loader.load(
-            './cyber_punk_box/scene.gltf', // 메인 모델 파일 경로
-            function (gltf) {
-                mainModel = gltf.scene;
-                mainModel.traverse((node) => {
-                    if (node.isMesh && node.material) {
-                        node.material.emissive = new THREE.Color(0x000000); // 발광 색상 제거
-                        node.material.emissiveIntensity = 0; // 발광 강도 제거
-                    }
-                });
-                scene.add(mainModel);
-                mainModel.position.set(0, 1, 0); // 메인 모델이 배경 위에 떠 있도록 위치 조정
-                mainModel.scale.set(0.9, 0.9, 0.9);
+        loader.load('./cyber_punk_box/scene.gltf', function (gltf) {
+            mainModel = gltf.scene;
+            mainModel.traverse((node) => {
+                if (node.isMesh && node.material) {
+                    node.material.emissive = new THREE.Color(0x000000);
+                    node.material.emissiveIntensity = 0;
+                }
+            });
+            scene.add(mainModel);
+            mainModel.position.set(0, 1, 0);
+            mainModel.scale.set(0.9, 0.9, 0.9);
 
-                pointLight.position.set(0, 2, 0); // 메인 모델 위쪽에 빛
-            },
-            undefined,
-            function (error) {
-                console.error('An error occurred while loading the main model:', error);
-            }
-        );
+            pointLight.position.set(0, 2, 0);
+        });
 
         // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
@@ -168,13 +151,13 @@
             requestAnimationFrame(animate);
 
             if (mainModel) {
-                mainModel.rotation.y += 0.01; // 메인 모델 회전
+                mainModel.rotation.y += 0.01;
             }
 
-            const targetX = mouse.x * 5; // PC 마우스 데이터 사용
-            const deviceX = rotation.gamma / 90 * 5; // 모바일 기기 방향 데이터 사용
+            const targetX = mouse.x * 5;
+            const deviceX = rotation.gamma / 90 * 5;
 
-            camera.position.x += ((targetX + deviceX) - camera.position.x) * 0.1; // 부드럽게 이동
+            camera.position.x += ((targetX + deviceX) - camera.position.x) * 0.1;
             camera.lookAt(0, 1, 0);
 
             composer.render();
@@ -189,6 +172,9 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             composer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // iOS 권한 요청을 클릭 이벤트에 연결
+        requestDeviceOrientationPermission();
     </script>
 </body>
 </html>
