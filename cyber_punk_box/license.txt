@@ -1,0 +1,11 @@
+Model Information:
+* title:	cyber punk box
+* source:	https://sketchfab.com/3d-models/cyber-punk-box-b7c5acd4a24e40d2a09c59afa017977b
+* author:	s.probka (https://sketchfab.com/s.probka)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "cyber punk box" (https://sketchfab.com/3d-models/cyber-punk-box-b7c5acd4a24e40d2a09c59afa017977b) by s.probka (https://sketchfab.com/s.probka) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
