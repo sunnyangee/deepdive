@@ -11,5 +11,11 @@ export default defineConfig({
     outDir: 'dist', // 빌드 디렉터리
     assetsDir: '',  // 정적 파일 디렉터리
     copyPublicDir: true, // public 폴더 복사
+    rollupOptions: {
+      input: {
+          main: './index.html',
+          loading: './public/loading.html', // 추가된 HTML
+      },
+    },
   },
 });
