@@ -37,8 +37,8 @@
         const rotation = { gamma: 0 };
 
         // iOS 권한 요청 및 움직임 감지 이벤트 처리
-        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            window.addEventListener('click', () => {
+        function requestDeviceOrientationPermission() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
                     .then((response) => {
                         if (response === 'granted') {
@@ -49,9 +49,9 @@
                         }
                     })
                     .catch(console.error);
-            });
-        } else {
-            window.addEventListener('deviceorientation', handleDeviceOrientation);
+            } else {
+                window.addEventListener('deviceorientation', handleDeviceOrientation);
+            }
         }
 
         function handleDeviceOrientation(event) {
@@ -59,6 +59,9 @@
                 rotation.gamma = event.gamma;
             }
         }
+
+        // iOS 권한 요청을 클릭 이벤트에 연결
+        window.addEventListener('click', requestDeviceOrientationPermission);
 
         // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
@@ -150,6 +153,11 @@
 
         window.addEventListener('click', handleInteraction);
         window.addEventListener('touchstart', handleInteraction);
+
+        // PC 환경: 마우스 움직임 감지
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        });
 
         // 카메라 초기 위치
         camera.position.set(0, 5, 5);
