@@ -40,12 +40,14 @@
         #permissionButton:hover {
             background-color: #e000e0;
         }
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
     </style>
 </head>
 <body>
     <div id="permissionOverlay" style="display: none;">
         <h1>움직임 권한을 허용해 주세요</h1>
         <button id="permissionButton">허용</button>
+            
     </div>
     <script type="module">
         import * as THREE from 'three';
@@ -197,12 +199,12 @@
             if (interactionReady) {
                 console.log('Interaction detected: ready for next action.');
                 window.addEventListener('click', () => {
-                    console.log('Navigating to loading.html...');
-                    window.location.href = 'loading.html';
+                    console.log('Navigating to story.html...');
+                    window.location.href = 'story.html';
                 }, { once: true });
                 window.addEventListener('touchstart', () => {
-                    console.log('Navigating to loading.html...');
-                    window.location.href = 'loading.html';
+                    console.log('Navigating to story.html...');
+                    window.location.href = 'story.html';
                 }, { once: true });
             }
         }
