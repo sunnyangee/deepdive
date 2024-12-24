@@ -36,6 +36,8 @@
         const mouse = new THREE.Vector2();
         const rotation = { gamma: 0 };
 
+        let permissionGranted = false;
+
         // iOS 권한 요청 및 움직임 감지 이벤트 처리
         function requestDeviceOrientationPermission() {
             if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -43,6 +45,7 @@
                     .then((response) => {
                         if (response === 'granted') {
                             console.log('DeviceOrientation permission granted.');
+                            permissionGranted = true;
                             window.addEventListener('deviceorientation', handleDeviceOrientation);
                         } else {
                             console.warn('DeviceOrientation permission denied.');
@@ -51,6 +54,7 @@
                     .catch(console.error);
             } else {
                 // iOS 이전 버전 및 Android
+                permissionGranted = true;
                 window.addEventListener('deviceorientation', handleDeviceOrientation);
             }
         }
@@ -62,7 +66,11 @@
         }
 
         // 터치 이벤트로 권한 요청
-        window.addEventListener('touchstart', requestDeviceOrientationPermission, { once: true });
+        window.addEventListener('touchstart', () => {
+            if (!permissionGranted) {
+                requestDeviceOrientationPermission();
+            }
+        }, { once: true });
 
         // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
@@ -133,8 +141,10 @@
 
         // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
-            console.log('Navigating to loading.html...');
-            window.location.href = 'loading.html';
+            if (permissionGranted) {
+                console.log('Navigating to loading.html...');
+                window.location.href = 'loading.html';
+            }
         }
 
         window.addEventListener('click', handleInteraction);
