@@ -50,7 +50,9 @@
                             console.warn('DeviceOrientation permission denied.');
                         }
                     })
-                    .catch(console.error);
+                    .catch((error) => {
+                        console.error('DeviceOrientation permission error:', error);
+                    });
             } else {
                 // Android 및 iOS 13 미만
                 permissionGranted = true;
@@ -64,17 +66,26 @@
             }
         }
 
-        // iOS에서만 권한 요청: 페이지 로드 후 0.3초 뒤 트리거
+        // iOS에서만 권한 요청 트리거
         function isIOS() {
             return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         }
 
         if (isIOS()) {
-            setTimeout(() => {
-                requestDeviceOrientationPermission();
-            }, 300);
+            console.log('iOS detected: waiting for user interaction to request permission.');
+            document.body.addEventListener(
+                'touchstart',
+                () => {
+                    if (!permissionGranted) {
+                        console.log('Requesting DeviceOrientation permission...');
+                        requestDeviceOrientationPermission();
+                    }
+                },
+                { once: true } // 한 번만 실행
+            );
         } else {
             // Android 및 PC는 권한 요청 없이 동작
+            console.log('Non-iOS device detected: skipping permission request.');
             permissionGranted = true;
         }
 
@@ -146,12 +157,8 @@
 
         // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
-            if (permissionGranted || !window.DeviceOrientationEvent) {
-                console.log('Navigating to loading.html...');
-                window.location.href = 'loading.html';
-            } else {
-                console.warn('Permission not granted yet.');
-            }
+            console.log('Navigating to loading.html...');
+            window.location.href = 'loading.html';
         }
 
         window.addEventListener('click', handleInteraction);
