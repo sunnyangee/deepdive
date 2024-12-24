@@ -8,7 +8,8 @@ export default defineConfig({
     base: './',
   },
   build: {
-    outDir: 'dist', // Netlify가 기본적으로 사용하는 디렉터리
-    assetsDir: '', // 정적 파일 폴더
-},
+    outDir: 'dist', // 빌드 디렉터리
+    assetsDir: '',  // 정적 파일 디렉터리
+    copyPublicDir: true, // public 폴더 복사
+  },
 });
