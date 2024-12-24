@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE: Deep Dive!</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        #permissionOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+            color: #fff;
+            font-size: 0.6em; /* 글씨 크기 줄임 */
+        }
+        #permissionButton {
+            background-color: #ff00ff; /* 마젠타색 */
+            border: none;
+            color: white;
+            padding: 9px 18px; /* 버튼 크기 줄임 */
+            font-size: 0.6em; /* 버튼 텍스트 크기 줄임 */
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 12px; /* 간격 조정 */
+        }
+        #permissionButton:hover {
+            background-color: #e000e0;
+        }
+    </style>
+</head>
+<body>
+    <div id="permissionOverlay" style="display: none;">
+        <h1>움직임 권한을 허용해 주세요</h1>
+        <button id="permissionButton">허용</button>
+    </div>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+        import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+        import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.physicallyCorrectLights = true;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        document.body.appendChild(renderer.domElement);
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const rotation = { gamma: 0 };
+
+        let permissionGranted = false;
+        let interactionReady = false;
+
+        // 권한 요청 메시지와 버튼
+        const overlay = document.getElementById('permissionOverlay');
+        const permissionButton = document.getElementById('permissionButton');
+
+        function requestDeviceOrientationPermission() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then((response) => {
+                        if (response === 'granted') {
+                            console.log('DeviceOrientation permission granted.');
+                            permissionGranted = true;
+                            overlay.style.display = 'none';
+                            window.addEventListener('deviceorientation', handleDeviceOrientation);
+                            interactionReady = true; // 권한 허용 후 추가 터치 필요
+                        } else {
+                            console.warn('DeviceOrientation permission denied.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('DeviceOrientation permission error:', error);
+                    });
+            } else {
+                // Android 및 iOS 13 미만
+                permissionGranted = true;
+                overlay.style.display = 'none';
+                window.addEventListener('deviceorientation', handleDeviceOrientation);
+                interactionReady = true; // 권한 허용 후 추가 터치 필요
+            }
+        }
+
+        function handleDeviceOrientation(event) {
+            if (event.gamma !== null) {
+                rotation.gamma = event.gamma;
+            }
+        }
+
+        // iOS에서만 권한 요청 트리거
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        if (isIOS()) {
+            console.log('iOS detected: showing permission request overlay.');
+            overlay.style.display = 'flex';
+            permissionButton.addEventListener('click', () => {
+                if (!permissionGranted) {
+                    console.log('Requesting DeviceOrientation permission...');
+                    requestDeviceOrientationPermission();
+                }
+            });
+        } else {
+            console.log('Non-iOS device detected: skipping permission request.');
+            permissionGranted = true;
+            interactionReady = true; // iOS가 아니면 바로 상호작용 가능
+        }
+
+        // Bloom 효과 초기화
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5,
+            1.0,
+            0.7
+        );
+        composer.addPass(bloomPass);
+
+        // 조명 추가
+        const ambientLight = new THREE.AmbientLight(0x222222, 2);
+        scene.add(ambientLight);
+
+        const spotLight = new THREE.SpotLight(0xffffff, 1.0);
+        spotLight.position.set(10, 20, 10);
+        spotLight.castShadow = true;
+        scene.add(spotLight);
+
+        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5);
+        scene.add(backgroundLight);
+
+        const pointLight = new THREE.PointLight(0xff00ff, 2, 10);
+        scene.add(pointLight);
+
+        const loader = new GLTFLoader();
+        let mainModel;
+        let backgroundScene;
+
+        loader.load('./rockstar/scene.gltf', function (gltf) {
+            backgroundScene = gltf.scene;
+            backgroundScene.traverse((node) => {
+                if (node.isMesh && node.material) {
+                    node.material.metalness = 0.8;
+                    node.material.roughness = 0.2;
+                    if (node.material.emissive) {
+                        node.material.emissiveIntensity = 3;
+                    } else {
+                        node.material.emissive = new THREE.Color(0x333333);
+                        node.material.emissiveIntensity = 1.5;
+                    }
+                }
+            });
+            scene.add(backgroundScene);
+            backgroundScene.position.set(4, -16, 3);
+            backgroundScene.scale.set(1, 1, 1);
+        });
+
+        loader.load('./cyber_punk_box/scene.gltf', function (gltf) {
+            mainModel = gltf.scene;
+            mainModel.traverse((node) => {
+                if (node.isMesh && node.material) {
+                    node.material.emissive = new THREE.Color(0x000000);
+                    node.material.emissiveIntensity = 0;
+                }
+            });
+            scene.add(mainModel);
+            mainModel.position.set(0, 1, 0);
+            mainModel.scale.set(0.9, 0.9, 0.9);
+
+            pointLight.position.set(0, 2, 0);
+        });
+
+        // 클릭 및 터치 이벤트 처리
+        function handleInteraction() {
+            if (interactionReady) {
+                console.log('Interaction detected: ready for next action.');
+                window.addEventListener('click', () => {
+                    console.log('Navigating to loading.html...');
+                    window.location.href = 'loading.html';
+                }, { once: true });
+                window.addEventListener('touchstart', () => {
+                    console.log('Navigating to loading.html...');
+                    window.location.href = 'loading.html';
+                }, { once: true });
+            }
+        }
+
+        window.addEventListener('click', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction);
+
+        // PC 환경: 마우스 움직임 감지
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        });
+
+        // 카메라 초기 위치
+        camera.position.set(0, 5, 5);
+        camera.lookAt(0, 1, 0);
+
+        // 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (mainModel) {
+                mainModel.rotation.y += 0.01;
+            }
+
+            const targetX = mouse.x * 5;
+            const deviceX = rotation.gamma / 90 * 5;
+
+            camera.position.x += ((targetX + deviceX) - camera.position.x) * 0.1;
+            camera.lookAt(0, 1, 0);
+
+            composer.render();
+        }
+
+        animate();
+
+        // 반응형 처리
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
