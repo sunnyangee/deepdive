@@ -27,14 +27,35 @@
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.physicallyCorrectLights = true; // PBR 효과 활성화
-        renderer.outputEncoding = THREE.sRGBEncoding; // 정확한 색상 출력
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
         document.body.appendChild(renderer.domElement);
 
-        // Raycaster 및 마우스 초기화
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
+        const rotation = { gamma: 0 };
+
+        // iOS 권한 요청 및 움직임 감지 이벤트 처리
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            window.addEventListener('click', () => {
+                DeviceOrientationEvent.requestPermission()
+                    .then((response) => {
+                        if (response === 'granted') {
+                            console.log('DeviceOrientation permission granted.');
+                            window.addEventListener('deviceorientation', handleDeviceOrientation);
+                        } else {
+                            console.warn('DeviceOrientation permission denied.');
+                        }
+                    })
+                    .catch(console.error);
+            });
+        } else {
+            window.addEventListener('deviceorientation', handleDeviceOrientation);
+        }
+
+        function handleDeviceOrientation(event) {
+            if (event.gamma !== null) {
+                rotation.gamma = event.gamma;
+            }
+        }
 
         // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
@@ -43,143 +64,23 @@
 
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.5, // 강도
-            1.0, // 반경
-            0.7 // 임계값
+            1.5,
+            1.0,
+            0.7
         );
         composer.addPass(bloomPass);
 
-        // 조명 추가
-        const ambientLight = new THREE.AmbientLight(0x222222, 2); // 주변광 강도 설정
-        scene.add(ambientLight);
-
-        const spotLight = new THREE.SpotLight(0xffffff, 1.0); // 스포트라이트로 하이라이트 조정
-        spotLight.position.set(10, 20, 10);
-        spotLight.castShadow = true;
-        scene.add(spotLight);
-
-        // 배경 밝기 조정 조명 추가
-        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5); // 배경 밝기 강화
-        scene.add(backgroundLight);
-
-        // 메인 모델 주변에 마젠타색 빛 추가
-        const pointLight = new THREE.PointLight(0xff00ff, 2, 10); // 강한 마젠타색 빛
-        scene.add(pointLight);
-
-        // GLTFLoader로 모델 로드
-        const loader = new GLTFLoader();
-        let mainModel;
-        let backgroundScene;
-
-        // 배경 모델 로드
-        loader.load(
-            './rockstar/scene.gltf', // 배경 파일 경로
-            function (gltf) {
-                backgroundScene = gltf.scene;
-                backgroundScene.traverse((node) => {
-                    if (node.isMesh && node.material) {
-                        node.material.metalness = 0.8; // 바닥 반사 설정
-                        node.material.roughness = 0.2; // 반사 매끄러움 조정
-
-                        // Emissive 설정 확인 및 조정
-                        if (node.material.emissive) {
-                            node.material.emissiveIntensity = 3; // 배경 네온 밝기 조정
-                        } else {
-                            node.material.emissive = new THREE.Color(0x333333); // 어두운 발광 기본값
-                            node.material.emissiveIntensity = 1.5;
-                        }
-                    }
-                });
-                scene.add(backgroundScene);
-                backgroundScene.position.set(4, -16, 3); // 배경 모델 위치
-                backgroundScene.scale.set(1, 1, 1); // 배경 크기 조정
-            },
-            undefined,
-            function (error) {
-                console.error('An error occurred while loading the background:', error);
-            }
-        );
-
-        // 메인 모델 로드
-        loader.load(
-            './cyber_punk_box/scene.gltf', // 메인 모델 파일 경로
-            function (gltf) {
-                mainModel = gltf.scene;
-                mainModel.traverse((node) => {
-                    if (node.isMesh && node.material) {
-                        // 텍스처 유지
-                        node.material.emissive = new THREE.Color(0x000000); // 발광 색상 제거
-                        node.material.emissiveIntensity = 0; // 발광 강도 제거
-                    }
-                });
-                scene.add(mainModel);
-                mainModel.position.set(0, 1, 0); // 메인 모델이 배경 위에 떠 있도록 위치 조정
-                mainModel.scale.set(0.9, 0.9, 0.9);
-
-                // 메인 모델 주변으로 PointLight 위치 고정
-                pointLight.position.set(0, 2, 0); // 메인 모델 위쪽에 빛
-            },
-            undefined,
-            function (error) {
-                console.error('An error occurred while loading the main model:', error);
-            }
-        );
-
-        // 클릭 이벤트 추가 (화면 아무 곳이나 클릭 시 처리)
-        window.addEventListener('click', () => {
+        // 클릭 및 터치 이벤트 처리
+        function handleInteraction() {
             console.log('Navigating to loading.html...');
             window.location.href = 'loading.html';
-        });
-
-        // 카메라 초기 위치
-        camera.position.set(0, 5, 5);
-        camera.lookAt(0, 1, 0);
-
-        // PC와 모바일 반응형 설정
-        const rotation = { gamma: 0 };
-
-        // PC 환경: 마우스 움직임 감지 (x축만)
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1; // -1에서 1 사이 값
-        });
-
-        // 모바일 환경: 기기 방향 감지 (x축만)
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', (event) => {
-                rotation.gamma = event.gamma; // Y축 회전 (도)
-            });
         }
 
-        // 애니메이션 루프
-        function animate() {
-            requestAnimationFrame(animate);
+        window.addEventListener('click', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction);
 
-            if (mainModel) {
-                mainModel.rotation.y += 0.01; // 메인 모델 회전
-            }
-
-            // PC 환경: 마우스 데이터 사용
-            const targetX = mouse.x * 5; // x축 범위 조정
-
-            // 모바일 환경: 기기 방향 데이터 사용
-            const deviceX = rotation.gamma / 90 * 5; // 좌우
-
-            // 최종 카메라 위치 계산 (PC와 모바일 데이터 혼합)
-            camera.position.x += ((targetX + deviceX) - camera.position.x) * 0.1; // 부드럽게 이동
-            camera.lookAt(0, 1, 0); // 메인 모델 중심 바라보기
-
-            composer.render();
-        }
-
-        animate();
-
-        // 반응형 처리
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
-        });
+        // 나머지 Three.js 초기화 및 애니메이션 코드 생략...
     </script>
 </body>
 </html>
+
