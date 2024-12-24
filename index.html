@@ -61,6 +61,9 @@
             }
         }
 
+        // 터치 이벤트로 권한 요청
+        window.addEventListener('touchstart', requestDeviceOrientationPermission, { once: true });
+
         // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
@@ -75,18 +78,18 @@
         composer.addPass(bloomPass);
 
         // 조명 추가
-        const ambientLight = new THREE.AmbientLight(0x222222, 2);
+        const ambientLight = new THREE.AmbientLight(0x222222, 2); // 주변광 강도 설정
         scene.add(ambientLight);
 
-        const spotLight = new THREE.SpotLight(0xffffff, 1.0);
+        const spotLight = new THREE.SpotLight(0xffffff, 1.0); // 스포트라이트로 하이라이트 조정
         spotLight.position.set(10, 20, 10);
         spotLight.castShadow = true;
         scene.add(spotLight);
 
-        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5);
+        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5); // 배경 밝기 강화
         scene.add(backgroundLight);
 
-        const pointLight = new THREE.PointLight(0xff00ff, 2, 10);
+        const pointLight = new THREE.PointLight(0xff00ff, 2, 10); // 강한 마젠타색 빛
         scene.add(pointLight);
 
         // GLTFLoader로 모델 로드
@@ -172,9 +175,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             composer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        // iOS 권한 요청을 클릭 이벤트에 연결
-        requestDeviceOrientationPermission();
     </script>
 </body>
 </html>
