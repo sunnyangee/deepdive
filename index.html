@@ -37,6 +37,7 @@
 
         let permissionGranted = false;
 
+        // iOS 권한 요청 및 움직임 감지 이벤트 처리
         function requestDeviceOrientationPermission() {
             if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
@@ -51,6 +52,7 @@
                     })
                     .catch(console.error);
             } else {
+                // Android 및 iOS 13 미만
                 permissionGranted = true;
                 window.addEventListener('deviceorientation', handleDeviceOrientation);
             }
@@ -62,12 +64,21 @@
             }
         }
 
-        window.addEventListener('touchstart', () => {
-            if (!permissionGranted) {
-                requestDeviceOrientationPermission();
-            }
-        }, { once: true });
+        // iOS에서만 권한 요청: 페이지 로드 후 0.3초 뒤 트리거
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
 
+        if (isIOS()) {
+            setTimeout(() => {
+                requestDeviceOrientationPermission();
+            }, 300);
+        } else {
+            // Android 및 PC는 권한 요청 없이 동작
+            permissionGranted = true;
+        }
+
+        // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
@@ -80,6 +91,7 @@
         );
         composer.addPass(bloomPass);
 
+        // 조명 추가
         const ambientLight = new THREE.AmbientLight(0x222222, 2);
         scene.add(ambientLight);
 
@@ -132,23 +144,29 @@
             pointLight.position.set(0, 2, 0);
         });
 
+        // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
-            if (permissionGranted) {
+            if (permissionGranted || !window.DeviceOrientationEvent) {
                 console.log('Navigating to loading.html...');
                 window.location.href = 'loading.html';
+            } else {
+                console.warn('Permission not granted yet.');
             }
         }
 
         window.addEventListener('click', handleInteraction);
         window.addEventListener('touchstart', handleInteraction);
 
+        // PC 환경: 마우스 움직임 감지
         window.addEventListener('mousemove', (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         });
 
+        // 카메라 초기 위치
         camera.position.set(0, 5, 5);
         camera.lookAt(0, 1, 0);
 
+        // 애니메이션 루프
         function animate() {
             requestAnimationFrame(animate);
 
@@ -167,6 +185,7 @@
 
         animate();
 
+        // 반응형 처리
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
