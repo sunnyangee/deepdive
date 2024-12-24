@@ -195,8 +195,15 @@
         // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
             if (interactionReady) {
-                console.log('Navigating to loading.html...');
-                window.location.href = 'loading.html';
+                console.log('Interaction detected: ready for next action.');
+                window.addEventListener('click', () => {
+                    console.log('Navigating to loading.html...');
+                    window.location.href = 'loading.html';
+                }, { once: true });
+                window.addEventListener('touchstart', () => {
+                    console.log('Navigating to loading.html...');
+                    window.location.href = 'loading.html';
+                }, { once: true });
             }
         }
 
