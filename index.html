@@ -25,19 +25,20 @@
             z-index: 1000;
             flex-direction: column;
             color: #fff;
+            font-size: 0.6em; /* 글씨 크기 줄임 */
         }
         #permissionButton {
-            background-color: #ff4500;
+            background-color: #ff00ff; /* 마젠타색 */
             border: none;
             color: white;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 9px 18px; /* 버튼 크기 줄임 */
+            font-size: 0.6em; /* 버튼 텍스트 크기 줄임 */
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 12px; /* 간격 조정 */
         }
         #permissionButton:hover {
-            background-color: #ff5733;
+            background-color: #e000e0;
         }
     </style>
 </head>
@@ -67,6 +68,7 @@
         const rotation = { gamma: 0 };
 
         let permissionGranted = false;
+        let interactionReady = false;
 
         // 권한 요청 메시지와 버튼
         const overlay = document.getElementById('permissionOverlay');
@@ -81,6 +83,7 @@
                             permissionGranted = true;
                             overlay.style.display = 'none';
                             window.addEventListener('deviceorientation', handleDeviceOrientation);
+                            interactionReady = true; // 권한 허용 후 추가 터치 필요
                         } else {
                             console.warn('DeviceOrientation permission denied.');
                         }
@@ -93,6 +96,7 @@
                 permissionGranted = true;
                 overlay.style.display = 'none';
                 window.addEventListener('deviceorientation', handleDeviceOrientation);
+                interactionReady = true; // 권한 허용 후 추가 터치 필요
             }
         }
 
@@ -119,6 +123,7 @@
         } else {
             console.log('Non-iOS device detected: skipping permission request.');
             permissionGranted = true;
+            interactionReady = true; // iOS가 아니면 바로 상호작용 가능
         }
 
         // Bloom 효과 초기화
@@ -189,7 +194,7 @@
 
         // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
-            if (!isIOS() || permissionGranted) {
+            if (interactionReady) {
                 console.log('Navigating to loading.html...');
                 window.location.href = 'loading.html';
             }
