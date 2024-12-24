@@ -22,13 +22,12 @@
         import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
         import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 
-        // Three.js 초기화
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.physicallyCorrectLights = true; // PBR 효과 활성화
-        renderer.outputEncoding = THREE.sRGBEncoding; // 정확한 색상 출력
+        renderer.physicallyCorrectLights = true;
+        renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         document.body.appendChild(renderer.domElement);
 
@@ -38,7 +37,6 @@
 
         let permissionGranted = false;
 
-        // iOS 권한 요청 및 움직임 감지 이벤트 처리
         function requestDeviceOrientationPermission() {
             if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
@@ -53,7 +51,6 @@
                     })
                     .catch(console.error);
             } else {
-                // iOS 이전 버전 및 Android
                 permissionGranted = true;
                 window.addEventListener('deviceorientation', handleDeviceOrientation);
             }
@@ -65,14 +62,12 @@
             }
         }
 
-        // 터치 이벤트로 권한 요청
         window.addEventListener('touchstart', () => {
             if (!permissionGranted) {
                 requestDeviceOrientationPermission();
             }
         }, { once: true });
 
-        // Bloom 효과 초기화
         const composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
@@ -85,22 +80,20 @@
         );
         composer.addPass(bloomPass);
 
-        // 조명 추가
-        const ambientLight = new THREE.AmbientLight(0x222222, 2); // 주변광 강도 설정
+        const ambientLight = new THREE.AmbientLight(0x222222, 2);
         scene.add(ambientLight);
 
-        const spotLight = new THREE.SpotLight(0xffffff, 1.0); // 스포트라이트로 하이라이트 조정
+        const spotLight = new THREE.SpotLight(0xffffff, 1.0);
         spotLight.position.set(10, 20, 10);
         spotLight.castShadow = true;
         scene.add(spotLight);
 
-        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5); // 배경 밝기 강화
+        const backgroundLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5);
         scene.add(backgroundLight);
 
-        const pointLight = new THREE.PointLight(0xff00ff, 2, 10); // 강한 마젠타색 빛
+        const pointLight = new THREE.PointLight(0xff00ff, 2, 10);
         scene.add(pointLight);
 
-        // GLTFLoader로 모델 로드
         const loader = new GLTFLoader();
         let mainModel;
         let backgroundScene;
@@ -139,7 +132,6 @@
             pointLight.position.set(0, 2, 0);
         });
 
-        // 클릭 및 터치 이벤트 처리
         function handleInteraction() {
             if (permissionGranted) {
                 console.log('Navigating to loading.html...');
@@ -150,16 +142,13 @@
         window.addEventListener('click', handleInteraction);
         window.addEventListener('touchstart', handleInteraction);
 
-        // PC 환경: 마우스 움직임 감지
         window.addEventListener('mousemove', (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         });
 
-        // 카메라 초기 위치
         camera.position.set(0, 5, 5);
         camera.lookAt(0, 1, 0);
 
-        // 애니메이션 루프
         function animate() {
             requestAnimationFrame(animate);
 
@@ -178,7 +167,6 @@
 
         animate();
 
-        // 반응형 처리
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
