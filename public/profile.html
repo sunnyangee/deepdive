@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Hahmlet&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Black Han Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+        }
+
+        .containerr {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .poster {
+            width: 100%;
+            height: 100%;
+            max-height: 100vh;
+            object-fit: cover;
+            margin: 0;
+            margin-top: 10px;
+        }
+
+        .text-box {
+            background-color: white;
+            color: black;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            font-family: 'Hahmlet', serif;
+            box-sizing: border-box;
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+
+        .text-box p {
+            margin: 10px 0;
+            font-size: 12.6px; /* 현재의 70% 크기 */
+        }
+
+        .sidebar-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: url('sidebar.png') no-repeat center center;
+            background-size: cover;
+            width: 25px;
+            height: 25px;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -175px; /* 기존의 70% 너비 적용 */
+            width: 175px;
+            min-height: 100vh;
+            background: url('background.png') no-repeat center center;
+            background-size: cover;
+            background-blend-mode: overlay;
+            opacity: 0.85; /* 불투명도 70% 적용 */
+            color: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 999;
+            font-family: 'Hahmlet', serif;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+            margin-top: 30px;
+            font-size: 12.6px; /* 텍스트 박스와 동일한 폰트 크기 */
+        }
+
+
+        .sidebar.show {
+            right: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="containerr">
+        <!-- 포스터 이미지 -->
+        <img src="logooo.png" alt="포스터 이미지" class="poster">
+    </div>
+    <div class="container">
+
+        <!-- 사이드바 버튼 -->
+        <button class="sidebar-button" onclick="toggleSidebar()"></button>
+
+        <!-- 텍스트 박스 -->
+        <div class="text-box">
+            <p>[프로필 양식]</p>
+            <p>- 코드 네임 (본명 혹은 가명 사용 가능)</p>
+            <p>- 나이 (17~19세, 1학년 고정)</p>
+            <p>* 타 학교 편입 및 유급, 혹은 복학의 설정은 자유입니다. 늦은 입학 설정 또한 허용합니다.</p>
+            <p>- 생일 (년도 제외 작성)</p>
+            <p>- 키</p>
+            <p>- 스탯 (힘, 민첩, 정신력, 행운 각 1~5, 총 16)</p>
+            <p>* 프로필 내 스탯을 기반으로 한 전투 진행 가능성이 있으며, 커뮤 러닝 도중 스탯이 변동될 수 있습니다.</p>
+            <p>- 특징 (사이버 웨어 서술 가능)</p>
+            <p>* 스토리 진행에 반영될 가능성이 있으며, 세계관을 크게 붕괴하지 않는 선에서 자율 구상 및 날조 가능합니다.</p>
+            <p>- 소지품 (총기 및 무기류는 금함, 캐 어필 용도로만 작성 가능)</p>
+            <p> ----------- </p>
+            <p>[비밀 프로필]</p>
+            <p>본명 / 비밀 설정 / 오너 계정</p>
+            <p>본명과 코드 네임이 같다면 비밀 프로필에 서술하지 않아도 됩니다. 다만, 본명을 서술할 시 스토리 진행에 반영될 가능성이 있습니다.</p>
+            <p>프로필 제출 시 외부링크 사용을 허용하며, 이름 나이 임관주 링크 순으로 기재하는 경우에만 정상 프로필로 접수됩니다. 비밀 프로필은 게시글 하단 비밀 댓글로 제출해 주세요.</p>
+
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar a">
+        <a href="main.html">총공지</a>
+        <a href="story.html">세계관</a>
+        <a href="profile.html">프로필 양식</a>
+        <a href="https://band.us/n/a3a7A0GdMet52">BAND</a>
+    </div>
+    
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            sidebar.classList.toggle('show');
+            body.classList.toggle('sidebar-open');
+        }
+    </script>
+</body>
+</html>

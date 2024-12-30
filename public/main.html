@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Hahmlet&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Black Han Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+        }
+
+        .containerr {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .poster {
+            width: 100%;
+            height: 100%;
+            max-height: 100vh;
+            object-fit: cover;
+            margin: 0;
+            margin-top: 10px;
+        }
+
+        .text-box {
+            background-color: white;
+            color: black;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            font-family: 'Hahmlet', serif;
+            box-sizing: border-box;
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+
+        .text-box p {
+            margin: 10px 0;
+            font-size: 12.6px; /* 현재의 70% 크기 */
+        }
+
+        .sidebar-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: url('sidebar.png') no-repeat center center;
+            background-size: cover;
+            width: 25px;
+            height: 25px;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -175px; /* 기존의 70% 너비 적용 */
+            width: 175px;
+            min-height: 100vh;
+            background: url('background.png') no-repeat center center;
+            background-size: cover;
+            background-blend-mode: overlay;
+            opacity: 0.85; /* 불투명도 70% 적용 */
+            color: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 999;
+            font-family: 'Hahmlet', serif;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+            margin-top: 30px;
+            font-size: 12.6px; /* 텍스트 박스와 동일한 폰트 크기 */
+        }
+
+
+        .sidebar.show {
+            right: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="containerr">
+        <!-- 포스터 이미지 -->
+        <img src="logooo.png" alt="포스터 이미지" class="poster">
+    </div>
+    <div class="container">
+
+        <!-- 사이드바 버튼 -->
+        <button class="sidebar-button" onclick="toggleSidebar()"></button>
+
+        <!-- 텍스트 박스 -->
+        <div class="text-box">
+            <p>[총공지]</p>
+            <p>1. 우리 모두는 네온 돔 내부에 존재하는 아라사카 아카데미에 속한 학생입니다. 입학하게 된 이유는 자유입니다. (대기업 취업 목적 혹은 아카데미의 명성을 바라고 들어오는 경우 등)</p>
+            <p>2. MPC 미포함 최대 15명의 인원을 수용합니다. 다양한 캐릭터 디자인을 지향하며, 접수된 프로필의 수에 따라 최대 인원이 변경될 수도 있으나 변경된 인원 또한 18명을 넘지 않을 예정입니다.</p>
+            <p>2-2. 러닝 기간 중 SNS(트위터, 카카오톡, 디스코드 등)에서 캐릭터가 유출될 만한 요소, 캐릭터 및 오너 유추, 공개하는 등의 행위를 금지합니다. 이는 커뮤니티의 러닝 여부부터 이를 유추할 수 있는 발언까지 모두 포함합니다. 발각될 경우 해당 캐릭터를 즉시 하차 처리합니다.</p>
+            <p>3. 필수 참여 단체 스토리 진행은 22시 혹은 그 이후부터 (MPC 계정으로 시간 공지) 진행될 예정입니다. 또한 스토리 진행 도중 스진계를 언급한 행동만을 인정합니다. 비밀댓글과 독백 및 개인 대화는 허용하나 스토리 진행에 차질이 갈 정도하면 제지할 수 있습니다.</p>
+            <p>3-2. 러너의 행동에 따라 엔딩이 바뀔 수 있으며, 경우에 따라 몰살 엔딩이 될 수도 있습니다.</p>
+            <p>4. 러닝 중 성사와 일대일을 금지하며, 메타발언 및 과도한 개그를 금지합니다. 공지를 전부 읽으셨다면 프로필 내부에 캐릭터 테마곡을 하나 삽입해 주세요. 스토리 진행 중 이모티콘 및 초성 사용, 물결표와 세미콜론을 금지합니다.</p>
+            <p>5. 프로필 내 스탯을 기반으로 한 전투가 진행될 수 있습니다. 자체 프로그램을 기반으로 진행되며 자세한 내용은 커뮤 개장 확정 이후 공지될 예정입니다.</p>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar a">
+        <a href="main.html">총공지</a>
+        <a href="story.html">세계관</a>
+        <a href="profile.html">프로필 양식</a>
+        <a href="https://band.us/n/a3a7A0GdMet52">BAND</a>
+    </div>
+    
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            sidebar.classList.toggle('show');
+            body.classList.toggle('sidebar-open');
+        }
+    </script>
+</body>
+</html>

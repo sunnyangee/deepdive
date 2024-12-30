@@ -3,28 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story Page</title>
+    <title>MAIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Hahmlet&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
+            padding: 0;
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Black Han Sans', sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            background-color: #000; /* 검정 배경 */
-            color: #fff; /* 흰색 텍스트 */
-            font-size: 2em; /* 텍스트 크기 */
-            
+            box-sizing: border-box;
+            overflow-x: hidden;
         }
-        
-        h1 {
+
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+        }
+
+        .containerr {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .poster {
+            width: 100%;
+            height: 100%;
+            max-height: 100vh;
+            object-fit: cover;
             margin: 0;
+            margin-top: 10px;
         }
-        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
+
+        .text-box {
+            background-color: white;
+            color: black;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            font-family: 'Hahmlet', serif;
+            box-sizing: border-box;
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+
+        .text-box p {
+            margin: 10px 0;
+            font-size: 12.6px; /* 현재의 70% 크기 */
+        }
+
+        .sidebar-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: url('sidebar.png') no-repeat center center;
+            background-size: cover;
+            width: 25px;
+            height: 25px;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -175px; /* 기존의 70% 너비 적용 */
+            width: 175px;
+            min-height: 100vh;
+            background: url('background.png') no-repeat center center;
+            background-size: cover;
+            background-blend-mode: overlay;
+            opacity: 0.85; /* 불투명도 70% 적용 */
+            color: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 999;
+            font-family: 'Hahmlet', serif;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+            margin-top: 30px;
+            font-size: 12.6px; /* 텍스트 박스와 동일한 폰트 크기 */
+        }
+
+
+        .sidebar.show {
+            right: 0;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top:15px;
+            font-size: 10px;
+            color: white;
+            background-color: #000000;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .link-button:hover {
+            background-color: #000000;
+        }
 
     </style>
 </head>
 <body>
-    <h1>폰트 적용 확인</h1>
+    <div class="containerr">
+        <!-- 포스터 이미지 -->
+        <img src="logooo.png" alt="포스터 이미지" class="poster">
+    </div>
+    <div class="container">
+
+        <!-- 사이드바 버튼 -->
+        <button class="sidebar-button" onclick="toggleSidebar()"></button>
+
+        <!-- 텍스트 박스 -->
+        <div class="text-box">
+            <p>[세계관]</p>
+            <p> 우리는 모두 2222년의 황폐화된 지구에 살고 있습니다. 살아 남은 도시는 거대 돔 형태로 변형되었고, 그 내부는 극한의 사회 구조를 띄기 시작합니다. 국가가 붕괴되고 국가의 권력보다 더 큰 힘을 가진 메가코프(초거대 기업)이 국가를 대체하면서 ‘나이트 시티’라는 완전한 독립 국가 형태의 자유주도 생겨납니다. 나이트 시티는 메가코프 ‘아라사카’가 주도권을 쥐고 있는 도시이며, 여러 동네가 있지만 본 커뮤니티에서는 국한된 장소를 이동하며 진행합니다.</p>
+            <p> 메가코프인 ‘아라사카’의 산하 아카데미인 ‘아라사카 아카데미’에 재학 중인 우리들은 아라사카에 도움이 될 수 있는 인재가 되기 위하여 노력합니다. 아라사카 아카데미에서 배우는 내용은 러너 여러분이 직접 구성해 주셔도 괜찮습니다. 아라사카는 부서가 굉장히 많은 기업이므로, 세계관에 무리가 가지 않는 선에서 구성해 주시면 됩니다.</p>
+            <p> 2222년, 지구인들은 기존의 신체에서 벗어나 다양한 개조를 하게 됩니다. 사이버 웨어(임플란트, 속된 말로 크롬이라고도 합니다.)를 신체에 심어 내구성을 강화하거나 폭발적인 힘을 내는 등 여러가지 효과를 낼 수 있습니다. 하지만 사이버 웨어를 과도하게 심을 경우 신체 또는 정신이 버티지 못하게 되어 ‘사이버 사이코’라는 이성을 잃은 괴물이 됩니다. 따라서, 본 커뮤니티에서 사이버 웨어를 이용하여 캐릭터 디자인을 하는 것은 지향하나 과도한 임플란트 남용은 지양하여 주시기 바랍니다.</p>
+            <p>-아래부터는 중요도가 낮은 부가적인 세계관입니다. 모르셔도 충분히 이해가 가능합니다.-</p>
+            <p>1. 사이버펑크 세계관에서의 역할들</p>
+            <p>a. 솔로: 용병과 같이 개인적인 일을 받는 직업입니다.</p>
+            <p>b. 테키: 공학과 전자 관련 일을 하는 직업입니다.</p>
+            <p>c. 넷러너: 몸과 신경계를 넷에 직접 연결해 각종 해킹이나 첩보 활동을 하는 직업입니다.</p>
+            <p>위 직업들 이외에도 많은 직업군이 존재하며 본 커뮤니티에서 다룰 수 있는 직업은 이 세 가지 정도입니다. </p>
+            <p>2. 칩을 사용하여 임무나 일정을 나눌 수 있습니다. 2222년의 모든 인간들은 칩을 삽입할 수 있는 기기가 귀 뒤에 장치되어 있습니다.</p>
+            <p>3. 브레인 댄스는 BD라고도 하며, 전용 기기를 사용해 BD 임플란트를 장착한 사람의 시각, 청각, 촉각 등의 감각과 감정 등의 다양한 정보를 녹화하여, 다른 사람이 신경 전달을 통해 그 사건을 동일하게 체험할 수 있는 기술입니다.</p>
+            <p>4. 사이버 스페이스는 모종의 사건으로 인해 붕괴된 사이버 공간입니다. 다크 웹 정도로 이해하시면 됩니다. </p>
+            <p>5. 트라우마 팀 서비스에 가입된 사람들은 위험에 처했을 경우 트라우마 팀이 자동 호출되어 가입자를 보호합니다. 트라우마 서비스는 이용료가 꽤 비싸 중산층 이상이 이용합니다.</p>
+            <p> </p>
+            <p>사이버 펑크 세계관 자체가 방대하여 본 커뮤니티가 기반하고 있는 내용은 위 내용으로 제한합니다. 하지만 캐릭터 디자인을 위해 더 자세한 세계관이 필요하신 분들은 아래 문서를 참고해 주세요.</p>
+            <a href="https://namu.wiki/w/사이버펑크 2077/세계관 및 설정" class="link-button">click!</a>
+
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar a">
+        <a href="main.html">총공지</a>
+        <a href="story.html">세계관</a>
+        <a href="profile.html">프로필 양식</a>
+        <a href="https://band.us/n/a3a7A0GdMet52">BAND</a>
+    </div>
+    
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            sidebar.classList.toggle('show');
+            body.classList.toggle('sidebar-open');
+        }
+    </script>
 </body>
 </html>
