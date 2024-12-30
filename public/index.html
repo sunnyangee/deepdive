@@ -226,19 +226,21 @@
             requestAnimationFrame(animate);
 
             if (mainModel) {
-                mainModel.rotation.y += 0.01;
+                mainModel.rotation.y += 0.01; // 메인 모델의 회전 속도
             }
 
-            const targetX = mouse.x * 5;
-            const deviceX = rotation.gamma / 90 * 5;
+            const targetX = mouse.x * 30; // 마우스 움직임의 영향을 받는 카메라 위치
+            const deviceX = (rotation.gamma / 90) * 30; // 기기 방향 데이터 사용, 기존 값의 2배 속도로 증가
 
-            camera.position.x += ((targetX + deviceX) - camera.position.x) * 0.1;
+            // 카메라가 더 빠르게 이동하도록 값 증가
+            camera.position.x += ((targetX + deviceX) - camera.position.x) * 0.2; // 기존 0.1 -> 0.2로 변경
             camera.lookAt(0, 1, 0);
 
             composer.render();
         }
 
         animate();
+
 
         // 반응형 처리
         window.addEventListener('resize', () => {
